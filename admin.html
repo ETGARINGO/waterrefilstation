@@ -22,6 +22,39 @@
             background: #010b1a; display: flex; align-items: center;
             justify-content: center; z-index: 99; color: #0749a0;
         }
+
+        /* Floating Button Style */
+        .nav-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            background: #0749a0;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-button:hover {
+            background: #0a5ed1;
+            transform: translateY(-2px);
+        }
+
+        .nav-button:active {
+            transform: scale(0.95);
+        }
+
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -35,6 +68,10 @@
         </div>
     </div>
 
+    <button id="toggleBtn" class="nav-button" onclick="toggleView()">
+        🛒 Open Order Form
+    </button>
+
     <iframe 
         id="secure-frame"
         src="https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec?page=admin" 
@@ -43,12 +80,28 @@
     </iframe>
 
     <script>
+        const frame = document.getElementById('secure-frame');
+        const btn = document.getElementById('toggleBtn');
+        const adminUrl = "https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec?page=admin";
+        const orderUrl = "https://script.google.com/macros/s/AKfycby4wnaGlk4GdfXWqe7a6AZE6t0d8-LyZuODt7GGyJR3EOnW20kYPYHXjBPA7yegHjsC/exec";
+
+        function toggleView() {
+            document.getElementById('loader').style.display = 'flex';
+            if (frame.src === adminUrl) {
+                frame.src = orderUrl;
+                btn.innerHTML = "📊 Back to Admin";
+                btn.style.background = "#28a745"; // Success green for order mode
+            } else {
+                frame.src = adminUrl;
+                btn.innerHTML = "🛒 Open Order Form";
+                btn.style.background = "#0749a0"; // Blue for admin
+            }
+        }
+
         /**
          * ANTI-INSPECTION PROTECTION
-         * Authorized by: Elizer T Garingo (Cyber Sec IV)
          */
         document.onkeydown = function(e) {
-            // Block F12, Ctrl+Shift+I/J/C, Ctrl+U (View Source), Ctrl+S (Save)
             if(e.keyCode == 123 || 
               (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
               (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))) {
@@ -58,7 +111,6 @@
 
         /**
          * IDLE LOGOUT PROTOCOL (30 MINUTES)
-         * Critical for POS Terminals to prevent unauthorized transactions.
          */
         let idleTime = 0;
         const IDLE_LIMIT = 30; 
@@ -71,7 +123,6 @@
         setInterval(function() {
             idleTime++;
             if (idleTime >= IDLE_LIMIT) { 
-                // Hard reset for POS Security
                 window.location.reload(); 
             }
         }, 60000);
